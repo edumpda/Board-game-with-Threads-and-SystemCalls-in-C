@@ -4,6 +4,7 @@
 
 #define BOARD_SIZE 8
 
+// Estrutura do estado do jogo
 typedef struct {
   int board[BOARD_SIZE][BOARD_SIZE];
   int player_boards[2][BOARD_SIZE * BOARD_SIZE];
@@ -20,6 +21,7 @@ void initialize_game() {
   game_state.game_over = false;
 }
 
+// Verifica se o tabuleiro está cheio
 bool is_board_full() {
   for (int i = 0; i < BOARD_SIZE; i++) {
     for (int j = 0; j < BOARD_SIZE; j++) {
@@ -31,6 +33,7 @@ bool is_board_full() {
   return true;
 }
 
+// Verifica o vencedor
 void check_winner() {
   if (is_board_full()) {
     int count_player_1 = 0;
@@ -54,6 +57,7 @@ void check_winner() {
   }
 }
 
+// Imprime o tabuleiro
 void print_board() {
   for (int i = 0; i < BOARD_SIZE; i++) {
     for (int j = 0; j < BOARD_SIZE; j++) {
@@ -70,6 +74,7 @@ void print_board() {
   printf("\n");
 }
 
+// Verifica se o movimento é válido
 bool is_valid_move(int row, int col) {
   if (row >= BOARD_SIZE || col >= BOARD_SIZE) {
     return false;
@@ -98,11 +103,13 @@ bool is_valid_move(int row, int col) {
   return false;
 }
 
+// Realiza o movimento
 void make_move(int row, int col) {
   game_state.board[row][col] = game_state.current_player + 1;
   game_state.current_player = 1 - game_state.current_player;
 }
 
+// Thread do jogador
 void *player_thread(void *arg) {
   int player = *((int *)arg);
   while (!game_state.game_over) {
@@ -122,7 +129,7 @@ void *player_thread(void *arg) {
           break;
         }
       }
-      if (!valid_move_exists) {
+      if (!valid_move_exists && is_board_full) {
         printf("Jogador %d nao tem movimentos validos. Jogador %d e o vencedor!\n", player + 1, 2 - player);
         game_state.game_over = true;
         break;
